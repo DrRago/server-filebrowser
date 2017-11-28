@@ -4,7 +4,7 @@
 
 <head>
 
-    <title>Directory listing of <?php echo $lister->getListedPath(); ?></title>
+    <title>Directory listing of <?php echo $_SERVER["HTTP_HOST"] ?></title>
     <link rel="shortcut icon" href="/img/favicon.png">
 
     <!-- STYLES -->
@@ -48,24 +48,27 @@
 
             <ul id="upload-nav" class="nav navbar-nav">
                 <li>
-                    <a href="javascript:void(0)" id="upload">
+                    <a href="javascript:void(0)" id="upload_btn" title="Upload">
                         <i class="fa fa-arrow-circle-up fa-lg"></i>
                     </a>
                 </li>
             </ul>
 
-			<?php if ( $lister->isZipEnabled() ): ?>
-                <ul id="page-top-download-all" class="nav navbar-nav" title="Download as ZIP">
-                    <li>
-                        <a href="?zip=<?php echo $lister->getDirectoryPath(); ?>" id="download-all-link">
-                            <i class="fa fa-download fa-lg"></i>
-                        </a>
-                    </li>
-                </ul>
-			<?php endif; ?>
+            <ul id="settings-nav" class="nav navbar-nav" title="Settings">
+                <li>
+                    <a href="javascript:void(0)" id="settings-link">
+                        <i class="fa fa- fa-cog fa-lg"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/resources/scripts/logout.php" title="Sign out"><i class="fa fa-sign-out fa-lg"></i></a>
+                </li>
+            </ul>
 
         </div>
-
     </div>
 </div>
 
@@ -120,6 +123,14 @@
 
 				<?php endif; ?>
 
+                <?php if (end(explode(".", $fileInfo['file_path'])) == "zip"): ?>
+
+                    <a href="javascript:void(0)" class="file-unzip-button">
+                        <i class="fa fa-file-archive-o"></i>
+                    </a>
+
+                <?php endif; ?>
+
             </li>
 		<?php endforeach; ?>
 
@@ -169,23 +180,33 @@
             </div>
 
             <div class="modal-body">
+                <form id="upload-form" action="/resources/scripts/upload.php" method="post"
+                      enctype="multipart/form-data" class="form-inline">
+                    <input type="file" name="fileToUpload" id="fileToUpload" class="form-control">
+                    <input type="submit" value="Upload File" class="btn btn-primary" name="submit">
+                </form>
+            </div>
 
-                <table id="file-info" class="table table-bordered">
-                    <tbody>
+        </div>
+    </div>
+</div>
 
-                    <tr>
-                        <td class="table-title">MD5</td>
-                        <td class="md5-hash">{{md5_sum}}</td>
-                    </tr>
+<div id="settings-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
 
-                    <tr>
-                        <td class="table-title">SHA1</td>
-                        <td class="sha1-hash">{{sha1_sum}}</td>
-                    </tr>
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{modal_header}}</h4>
+            </div>
 
-                    </tbody>
-                </table>
-
+            <div class="modal-body">
+                <form id="change-password" action="/resources/scripts/update_profile.php" method="post"
+                      class="form-inline">
+                    <label for="password">New Password: </label><input class="form-control" type="password"
+                                                                       name="password" id="password">
+                    <input type="submit" value="Change password" name="submit" class="btn btn-primary">
+                </form>
             </div>
 
         </div>

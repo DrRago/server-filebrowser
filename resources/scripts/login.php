@@ -9,7 +9,7 @@ if ($_SESSION["key"] != $_POST["key"]) {
 }
 
 $username = $_POST["username"];
-$password = $_POST["password"];
+$password = hash("sha512", $_POST["password"]);
 
 $query_result = $mysqli->query("SELECT * FROM `user` WHERE `username`='$username' AND `password`='$password'");
 if ($query_result->num_rows != 1) {

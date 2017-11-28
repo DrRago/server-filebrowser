@@ -24,7 +24,7 @@ if ( isset( $_GET['hash'] ) ) {
 
 if ( isset( $_GET['zip'] ) ) {
 
-	$dirArray = $lister->zipDirectory( $_GET['zip'] );
+	$lister->zipDirectory( $_GET['zip'] );
 
 } else {
 
