@@ -115,6 +115,12 @@
 
                 </a>
 
+				<?php if ( $name != ".." ): ?>
+                    <a href="javascript:void(0)" class="delete-button">
+                        <i class="fa fa-trash"></i>
+                    </a>
+				<?php endif; ?>
+
 				<?php if ( is_file( $fileInfo['file_path'] ) ): ?>
 
                     <a href="javascript:void(0)" class="file-info-button">
@@ -123,13 +129,13 @@
 
 				<?php endif; ?>
 
-                <?php if (end(explode(".", $fileInfo['file_path'])) == "zip"): ?>
+				<?php if ( end( explode( ".", $fileInfo['file_path'] ) ) == "zip" ): ?>
 
                     <a href="javascript:void(0)" class="file-unzip-button">
                         <i class="fa fa-file-archive-o"></i>
                     </a>
 
-                <?php endif; ?>
+				<?php endif; ?>
 
             </li>
 		<?php endforeach; ?>

@@ -1,4 +1,15 @@
 $(document).ready(function () {
+    $('.delete-button').click(function () {
+        $.post({
+            url: 'resources/scripts/delete.php',
+            type: 'post',
+            data: {'path': $(this).closest('li').attr('data-href')},
+            success: function (data) {
+                location.reload()
+            }
+        })
+    });
+
 
     $('.file-unzip-button').click(function () {
         $.post({
