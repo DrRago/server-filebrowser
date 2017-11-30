@@ -616,6 +616,8 @@ class DirectoryLister
 
                         if (is_dir($relativePath)) {
                             $urlPath = $this->containsIndex($relativePath) ? $relativePath : '?dir=' . $urlPath;
+                        } else {
+                        	$urlPath = "view_file.php?file=" . $relativePath;
                         }
 
                         // Add the info to the main array

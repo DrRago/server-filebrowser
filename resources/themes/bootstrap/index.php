@@ -127,7 +127,7 @@
 				<?php if ( is_file( $fileInfo['file_path'] ) ): ?>
 
                     <a href="javascript:void(0)" class="file-info-button">
-                        <i class="fa fa-info-circle"></i>
+                        <i class="fa fa-download"></i>
                     </a>
 
 				<?php endif; ?>
