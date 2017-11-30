@@ -116,9 +116,12 @@
                 </a>
 
 				<?php if ( $name != ".." ): ?>
-                    <a href="javascript:void(0)" class="delete-button">
+                <form action="/resources/scripts/delete.php" method="post" class="delete-form <?=$fileInfo["id"]?>-form">
+                    <input title="" name="path" value="<?php echo $fileInfo['url_path']; ?>" style="display: none">
+                    <a href="javascript:$('.<?=$fileInfo["id"]?>-form').submit()" class="delete-button">
                         <i class="fa fa-trash"></i>
                     </a>
+                </form>
 				<?php endif; ?>
 
 				<?php if ( is_file( $fileInfo['file_path'] ) ): ?>

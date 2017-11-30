@@ -1,13 +1,8 @@
 $(document).ready(function () {
-    $('.delete-button').click(function () {
-        $.post({
-            url: 'resources/scripts/delete.php',
-            type: 'post',
-            data: {'path': $(this).closest('li').attr('data-href')},
-            success: function (data) {
-                location.reload()
-            }
-        })
+    $('.delete-form').submit(function (event) {
+        if (!confirm("Are you sure that you want to delete the file or directory \"" + $(this).closest('li').attr('data-name') + "\"?")) {
+            event.preventDefault();
+        }
     });
 
 

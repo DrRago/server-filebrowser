@@ -1,18 +1,28 @@
 <?php
-$path = "../../" . $_POST["path"];
+session_start();
+if ( isset( $_SESSION["username"] ) and isset( $_SESSION["password"] ) and isset( $_SESSION["key"] ) ) {
 
-if ( is_dir( "../../" . substr( $path, 11 ) ) ) {
-	$path = "../../" . substr( $path, 11 );
+	$path = "../../" . $_POST["path"];
+
+	if ( is_dir( "../../" . substr( $path, 11 ) ) ) {
+		$path = "../../" . substr( $path, 11 );
+	}
+	$path = realpath( $path );
+	remove( $path );
+
+	include "deletionlog.php";
+
+	createLog($path);
+
+	header( "location: $_SERVER[HTTP_REFERER]" );
+
 }
-remove( $path );
 
 function remove( $pathname ) {
 	if ( is_file( $pathname ) ) {
-		if ( strpos( $pathname, 'upload' ) !== false ) {
-			unlink( $pathname );
-		}
+		unlink( $pathname );
 	} elseif ( is_dir( $pathname ) ) {
-		foreach ( scandir( $pathname ) as $file ) {
+		foreach ( array_diff( scandir( $pathname ), array( '..', '.' ) ) as $file ) {
 			remove( $pathname . "/" . $file );
 		}
 		if ( strpos( $pathname, 'upload' ) !== false ) {

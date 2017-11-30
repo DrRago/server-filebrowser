@@ -532,7 +532,9 @@ class DirectoryLister
     protected function _readDirectory($directory, $sort = 'natcase')
     {
 
-        // Initialize array
+	    $counter = 0;
+
+	    // Initialize array
         $directoryArray = array();
 
         // Get directory contents
@@ -599,7 +601,8 @@ class DirectoryLister
                             'file_size' => '-',
                             'mod_time' => date($this->_config['date_format'], filemtime($realPath)),
                             'icon_class' => 'fa-level-up',
-                            'sort' => 0
+                            'sort' => 0,
+	                        'id' => $counter
                         );
                     }
 
@@ -622,12 +625,15 @@ class DirectoryLister
                             'file_size' => is_dir($realPath) ? '-' : $this->getFileSize($realPath),
                             'mod_time' => date($this->_config['date_format'], filemtime($realPath)),
                             'icon_class' => $iconClass,
-                            'sort' => $sort
+                            'sort' => $sort,
+                            'id' => $counter
                         );
                     }
 
                 }
             }
+
+            $counter ++;
 
         }
 

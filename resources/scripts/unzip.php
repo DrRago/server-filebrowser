@@ -1,4 +1,5 @@
 <?php
+session_start();
 if ( isset( $_SESSION["username"] ) and isset( $_SESSION["password"] ) and isset( $_SESSION["key"] ) ) {
 	$file = "../../" . $_POST["file"];
 
