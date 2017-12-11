@@ -115,7 +115,7 @@ class DirectoryLister
             header("Content-Disposition: attachment; filename = $download");
             header('Content-Length: ' . filesize($download));
             header("Location: $download");
-            unlink(tandashi.de.zip);
+            unlink("tandashi.de.zip");
         }
 
     }
