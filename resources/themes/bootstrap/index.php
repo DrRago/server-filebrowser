@@ -4,7 +4,7 @@
 
 <head>
 
-    <title>Directory listing of <?php echo $lister->getListedPath(); ?></title>
+    <title>Directory listing of <?php echo $_SERVER["HTTP_HOST"] ?></title>
     <link rel="shortcut icon" href="/img/favicon.png">
 
     <!-- STYLES -->
@@ -48,7 +48,7 @@
 
             <ul id="upload-nav" class="nav navbar-nav">
                 <li>
-                    <a href="javascript:void(0)" id="upload">
+                    <a href="javascript:void(0)" id="upload_btn">
                         <i class="fa fa-arrow-circle-up fa-lg"></i>
                     </a>
                 </li>
@@ -170,22 +170,11 @@
 
             <div class="modal-body">
 
-                <table id="file-info" class="table table-bordered">
-                    <tbody>
-
-                    <tr>
-                        <td class="table-title">MD5</td>
-                        <td class="md5-hash">{{md5_sum}}</td>
-                    </tr>
-
-                    <tr>
-                        <td class="table-title">SHA1</td>
-                        <td class="sha1-hash">{{sha1_sum}}</td>
-                    </tr>
-
-                    </tbody>
-                </table>
-
+                <form action="/resources/scripts/upload.php" method="post" enctype="multipart/form-data">
+                    Select image to upload:
+                    <input type="file" name="fileToUpload" id="fileToUpload">
+                    <input type="submit" value="Upload Image" name="submit">
+                </form>
             </div>
 
         </div>

@@ -13,28 +13,30 @@
  * @author Chris Kankiewicz (http://www.chriskankiewicz.com)
  * @copyright 2017 Chris Kankiewicz
  */
-class DirectoryLister {
+class DirectoryLister
+{
 
     // Define application version
     const VERSION = '2.7.0';
 
     // Reserve some variables
-    protected $_themeName     = null;
-    protected $_directory     = null;
-    protected $_appDir        = null;
-    protected $_appURL        = null;
-    protected $_config        = null;
-    protected $_fileTypes     = null;
+    protected $_themeName = null;
+    protected $_directory = null;
+    protected $_appDir = null;
+    protected $_appURL = null;
+    protected $_config = null;
+    protected $_fileTypes = null;
     protected $_systemMessage = null;
 
 
     /**
      * DirectoryLister construct function. Runs on object creation.
      */
-    public function __construct() {
+    public function __construct()
+    {
 
         // Set class directory constant
-        if(!defined('__DIR__')) {
+        if (!defined('__DIR__')) {
             define('__DIR__', dirname(__FILE__));
         }
 
@@ -62,13 +64,14 @@ class DirectoryLister {
 
     }
 
-     /**
+    /**
      * If it is allowed to zip whole directories
      *
      * @return true or false
      * @access public
      */
-    public function isZipEnabled() {
+    public function isZipEnabled()
+    {
         foreach ($this->_config['zip_disable'] as $disabledPath) {
             if (fnmatch($disabledPath, $this->_directory)) {
                 return false;
@@ -77,13 +80,14 @@ class DirectoryLister {
         return $this->_config['zip_dirs'];
     }
 
-     /**
+    /**
      * Creates zipfile of directory
      *
      * @param string $directory Relative path of directory to list
      * @access public
      */
-    public function zipDirectory($directory) {
+    public function zipDirectory($directory)
+    {
 
         if ($this->_config['zip_dirs']) {
 
@@ -94,55 +98,25 @@ class DirectoryLister {
                 echo "Access denied.";
             }
 
-            $filename_no_ext = basename($directory);
+            $zipname = basename($directory);
 
             if ($directory == '.') {
-                $filename_no_ext = $this->_config['home_label'];
+                $zipname = $this->_config['home_label'];
             }
 
-            // We deliver a zip file
-            header('Content-Type: archive/zip');
-
-            // Filename for the browser to save the zip file
-            header("Content-Disposition: attachment; filename=\"$filename_no_ext.zip\"");
-
-            //change directory so the zip file doesnt have a tree structure in it.
-            chdir($directory);
-
-            // TODO: Probably we have to parse exclude list more carefully
-            $exclude_list = implode(' ', $this->_config['hidden_files']);
-            $exclude_list = str_replace("*", "\*", $exclude_list);
-
-            if ($this->_config['zip_stream']) {
-
-                // zip the stuff (dir and all in there) into the streamed zip file
-                $stream = popen('/usr/bin/zip -' . $this->_config['zip_compression_level'] . ' -r -q - * -x ' . $exclude_list, 'r');
-
-                if ($stream) {
-                   fpassthru($stream);
-                   fclose($stream);
-                }
-
-            } else {
-
-                // get a tmp name for the .zip
-                $tmp_zip = tempnam('tmp', 'tempzip') . '.zip';
-
-                // zip the stuff (dir and all in there) into the tmp_zip file
-                exec('zip -' . $this->_config['zip_compression_level'] . ' -r ' . $tmp_zip . ' * -x ' . $exclude_list);
-
-                // calc the length of the zip. it is needed for the progress bar of the browser
-                $filesize = filesize($tmp_zip);
-                header("Content-Length: $filesize");
-
-                // deliver the zip file
-                $fp = fopen($tmp_zip, 'r');
-                echo fpassthru($fp);
-
-                // clean up the tmp zip file
-                unlink($tmp_zip);
-
+            $zip = new ZipArchive;
+            $download = $zipname . ".zip";
+            $zip->open($download, ZipArchive::CREATE);
+            foreach (glob("*.*") as $file) { /* Add appropriate path to read content of zip */
+                $zip->addFile($file);
             }
+            $zip->close();
+            header('Content-Type: application/zip');
+            header("Content-Disposition: attachment; filename = $download");
+            header('Content-Length: ' . filesize($download));
+            header("Location: $download");
+
+
         }
 
     }
@@ -155,7 +129,8 @@ class DirectoryLister {
      * @return array Array of directory being listed
      * @access public
      */
-    public function listDirectory($directory) {
+    public function listDirectory($directory)
+    {
 
         // Set directory
         $directory = $this->setDirectoryPath($directory);
@@ -180,7 +155,8 @@ class DirectoryLister {
      * @return array Array of breadcrumbs
      * @access public
      */
-    public function listBreadcrumbs($directory = null) {
+    public function listBreadcrumbs($directory = null)
+    {
 
         // Set directory variable if left blank
         if ($directory === null) {
@@ -197,14 +173,14 @@ class DirectoryLister {
         );
 
         // Generate breadcrumbs
-        $dirPath  = null;
+        $dirPath = null;
 
         foreach ($dirArray as $key => $dir) {
 
             if ($dir != '.') {
 
                 // Build the directory path
-                $dirPath = is_null($dirPath) ? $dir : $dirPath . '/' .  $dir;
+                $dirPath = is_null($dirPath) ? $dir : $dirPath . '/' . $dir;
 
                 // Combine the base path and dir path
                 $link = $this->_appURL . '?dir=' . rawurlencode($dirPath);
@@ -230,7 +206,8 @@ class DirectoryLister {
      * @return boolean Returns true if directory contains a valid index file, false if not
      * @access public
      */
-    public function containsIndex($dirPath) {
+    public function containsIndex($dirPath)
+    {
 
         // Check if links_dirs_with_index is enabled
         if ($this->linksDirsWithIndex()) {
@@ -260,7 +237,8 @@ class DirectoryLister {
      * @return string Path of the listed directory
      * @access public
      */
-    public function getListedPath() {
+    public function getListedPath()
+    {
 
         // Build the path
         if ($this->_directory == '.') {
@@ -280,7 +258,8 @@ class DirectoryLister {
      * @return string Theme name
      * @access public
      */
-    public function getThemeName() {
+    public function getThemeName()
+    {
         // Return the theme name
         return $this->_config['theme_name'];
     }
@@ -292,7 +271,8 @@ class DirectoryLister {
      * @return boolean Returns true if in config is enabled open links in another window, false if not
      * @access public
      */
-    public function externalLinksNewWindow() {
+    public function externalLinksNewWindow()
+    {
         return $this->_config['external_links_new_window'];
     }
 
@@ -316,7 +296,8 @@ class DirectoryLister {
      * @return string Path to theme
      * @access public
      */
-    public function getThemePath($absolute = false) {
+    public function getThemePath($absolute = false)
+    {
         if ($absolute) {
             // Set the theme path
             $themePath = $this->_appDir . '/themes/' . $this->_themeName;
@@ -338,7 +319,8 @@ class DirectoryLister {
      * @return array|bool Array of error messages or false
      * @access public
      */
-    public function getSystemMessages() {
+    public function getSystemMessages()
+    {
         if (isset($this->_systemMessage) && is_array($this->_systemMessage)) {
             return $this->_systemMessage;
         } else {
@@ -354,7 +336,8 @@ class DirectoryLister {
      * @return string Human-readable file size
      * @access public
      */
-    function getFileSize($filePath) {
+    function getFileSize($filePath)
+    {
 
         // Get file size
         $bytes = filesize($filePath);
@@ -380,7 +363,8 @@ class DirectoryLister {
      * @return array|string Array of file hashes
      * @access public
      */
-    public function getFileHash($filePath) {
+    public function getFileHash($filePath)
+    {
 
         // Placeholder array
         $hashArray = array();
@@ -397,7 +381,7 @@ class DirectoryLister {
 
         // Prevent access to parent folders
         if (strpos($filePath, '<') !== false || strpos($filePath, '>') !== false
-        || strpos($filePath, '..') !== false || strpos($filePath, '/') === 0) {
+            || strpos($filePath, '..') !== false || strpos($filePath, '/') === 0) {
             return json_encode($hashArray);
         }
 
@@ -405,13 +389,13 @@ class DirectoryLister {
         if (filesize($filePath) > $this->_config['hash_size_limit']) {
 
             // Notify user that file is too large
-            $hashArray['md5']  = '[ File size exceeds threshold ]';
+            $hashArray['md5'] = '[ File size exceeds threshold ]';
             $hashArray['sha1'] = '[ File size exceeds threshold ]';
 
         } else {
 
             // Generate file hashes
-            $hashArray['md5']  = hash_file('md5', $filePath);
+            $hashArray['md5'] = hash_file('md5', $filePath);
             $hashArray['sha1'] = hash_file('sha1', $filePath);
 
         }
@@ -429,7 +413,8 @@ class DirectoryLister {
      * @return string Sanitizd path to directory
      * @access public
      */
-    public function setDirectoryPath($path = null) {
+    public function setDirectoryPath($path = null)
+    {
 
         // Set the directory global variable
         $this->_directory = $this->_setDirectoryPath($path);
@@ -444,7 +429,8 @@ class DirectoryLister {
      * @return string Sanitizd path to directory
      * @access public
      */
-    public function getDirectoryPath() {
+    public function getDirectoryPath()
+    {
         return $this->_directory;
     }
 
@@ -456,7 +442,8 @@ class DirectoryLister {
      * @return bool true on success
      * @access public
      */
-    public function setSystemMessage($type, $text) {
+    public function setSystemMessage($type, $text)
+    {
 
         // Create empty message array if it doesn't already exist
         if (isset($this->_systemMessage) && !is_array($this->_systemMessage)) {
@@ -465,8 +452,8 @@ class DirectoryLister {
 
         // Set the error message
         $this->_systemMessage[] = array(
-            'type'  => $type,
-            'text'  => $text
+            'type' => $type,
+            'text' => $text
         );
 
         return true;
@@ -480,7 +467,8 @@ class DirectoryLister {
      * @return string Directory path to be listed
      * @access protected
      */
-    protected function _setDirectoryPath($dir) {
+    protected function _setDirectoryPath($dir)
+    {
 
         // Check for an empty variable
         if (empty($dir) || $dir == '.') {
@@ -493,7 +481,7 @@ class DirectoryLister {
         }
 
         // Remove trailing slash if present
-        if(substr($dir, -1, 1) == '/') {
+        if (substr($dir, -1, 1) == '/') {
             $dir = substr($dir, 0, -1);
         }
 
@@ -517,7 +505,7 @@ class DirectoryLister {
 
         // Prevent access to parent folders
         if (strpos($dir, '<') !== false || strpos($dir, '>') !== false
-        || strpos($dir, '..') !== false || strpos($dir, '/') === 0) {
+            || strpos($dir, '..') !== false || strpos($dir, '/') === 0) {
             // Set the error message
             $this->setSystemMessage('danger', '<b>ERROR:</b> An invalid path string was detected');
 
@@ -542,7 +530,8 @@ class DirectoryLister {
      * @return array Array of the directory contents
      * @access protected
      */
-    protected function _readDirectory($directory, $sort = 'natcase') {
+    protected function _readDirectory($directory, $sort = 'natcase')
+    {
 
         // Initialize array
         $directoryArray = array();
@@ -563,7 +552,7 @@ class DirectoryLister {
                 }
 
                 // Don't check parent dir if we're in the root dir
-                if ($this->_directory == '.' && $file == '..'){
+                if ($this->_directory == '.' && $file == '..') {
 
                     continue;
 
@@ -596,8 +585,8 @@ class DirectoryLister {
                     if ($this->_directory != '.') {
                         // Get parent directory path
                         $pathArray = explode('/', $relativePath);
-                        unset($pathArray[count($pathArray)-1]);
-                        unset($pathArray[count($pathArray)-1]);
+                        unset($pathArray[count($pathArray) - 1]);
+                        unset($pathArray[count($pathArray) - 1]);
                         $directoryPath = implode('/', $pathArray);
 
                         if (!empty($directoryPath)) {
@@ -606,12 +595,12 @@ class DirectoryLister {
 
                         // Add file info to the array
                         $directoryArray['..'] = array(
-                            'file_path'  => $this->_appURL . $directoryPath,
-                            'url_path'   => $this->_appURL . $directoryPath,
-                            'file_size'  => '-',
-                            'mod_time'   => date($this->_config['date_format'], filemtime($realPath)),
+                            'file_path' => $this->_appURL . $directoryPath,
+                            'url_path' => $this->_appURL . $directoryPath,
+                            'file_size' => '-',
+                            'mod_time' => date($this->_config['date_format'], filemtime($realPath)),
                             'icon_class' => 'fa-level-up',
-                            'sort'       => 0
+                            'sort' => 0
                         );
                     }
 
@@ -629,12 +618,12 @@ class DirectoryLister {
 
                         // Add the info to the main array
                         $directoryArray[pathinfo($relativePath, PATHINFO_BASENAME)] = array(
-                            'file_path'  => $relativePath,
-                            'url_path'   => $urlPath,
-                            'file_size'  => is_dir($realPath) ? '-' : $this->getFileSize($realPath),
-                            'mod_time'   => date($this->_config['date_format'], filemtime($realPath)),
+                            'file_path' => $relativePath,
+                            'url_path' => $urlPath,
+                            'file_size' => is_dir($realPath) ? '-' : $this->getFileSize($realPath),
+                            'mod_time' => date($this->_config['date_format'], filemtime($realPath)),
                             'icon_class' => $iconClass,
-                            'sort'       => $sort
+                            'sort' => $sort
                         );
                     }
 
@@ -662,10 +651,11 @@ class DirectoryLister {
      * @return array
      * @access protected
      */
-    protected function _arraySort($array, $sortMethod, $reverse = false) {
+    protected function _arraySort($array, $sortMethod, $reverse = false)
+    {
         // Create empty arrays
         $sortedArray = array();
-        $finalArray  = array();
+        $finalArray = array();
 
         // Create new array of just the keys and sort it
         $keys = array_keys($array);
@@ -761,7 +751,8 @@ class DirectoryLister {
      * @return boolean Returns true if file is in hidden array, false if not
      * @access protected
      */
-    protected function _isHidden($filePath) {
+    protected function _isHidden($filePath)
+    {
 
         // Add dot files to hidden files array
         if ($this->_config['hide_dot_files']) {
@@ -795,7 +786,8 @@ class DirectoryLister {
      * @return string The application URL
      * @access protected
      */
-    protected function _getAppUrl() {
+    protected function _getAppUrl()
+    {
 
         // Get the server protocol
         if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
@@ -806,13 +798,13 @@ class DirectoryLister {
 
         // Get the server hostname
         if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
-	        $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
-	    } else {
-	        $host = $_SERVER['HTTP_HOST'];
-	    }
+            $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+        } else {
+            $host = $_SERVER['HTTP_HOST'];
+        }
 
         // Get the URL path
-        $path      = $_SERVER['PHP_SELF'];
+        $path = $_SERVER['PHP_SELF'];
 
         // Build the application URL
         $appUrl = $protocol . $host . $path;
@@ -823,14 +815,15 @@ class DirectoryLister {
 
 
     /**
-      * Compares two paths and returns the relative path from one to the other
+     * Compares two paths and returns the relative path from one to the other
      *
      * @param string $fromPath Starting path
      * @param string $toPath Ending path
      * @return string $relativePath Relative path from $fromPath to $toPath
      * @access protected
      */
-    protected function _getRelativePath($fromPath, $toPath) {
+    protected function _getRelativePath($fromPath, $toPath)
+    {
 
         // Define the OS specific directory separator
         if (!defined('DS')) define('DS', DIRECTORY_SEPARATOR);
@@ -846,14 +839,14 @@ class DirectoryLister {
         // Remove last fromPath array element if it's empty
         $x = count($fromPathArray) - 1;
 
-        if(!trim($fromPathArray[$x])) {
+        if (!trim($fromPathArray[$x])) {
             array_pop($fromPathArray);
         }
 
         // Remove last toPath array element if it's empty
         $x = count($toPathArray) - 1;
 
-        if(!trim($toPathArray[$x])) {
+        if (!trim($toPathArray[$x])) {
             array_pop($toPathArray);
         }
 
