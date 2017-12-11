@@ -48,24 +48,27 @@
 
             <ul id="upload-nav" class="nav navbar-nav">
                 <li>
-                    <a href="javascript:void(0)" id="upload_btn">
+                    <a href="javascript:void(0)" id="upload_btn" title="Upload">
                         <i class="fa fa-arrow-circle-up fa-lg"></i>
                     </a>
                 </li>
             </ul>
 
-			<?php if ( $lister->isZipEnabled() ): ?>
-                <ul id="page-top-download-all" class="nav navbar-nav" title="Download as ZIP">
-                    <li>
-                        <a href="?zip=<?php echo $lister->getDirectoryPath(); ?>" id="download-all-link">
-                            <i class="fa fa-download fa-lg"></i>
-                        </a>
-                    </li>
-                </ul>
-			<?php endif; ?>
+            <ul id="settings-nav" class="nav navbar-nav" title="Settings">
+                <li>
+                    <a href="javascript:void(0)" id="settings-link">
+                        <i class="fa fa- fa-cog fa-lg"></i>
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="/resources/scripts/logout.php" title="Sign out"><i class="fa fa-sign-out fa-lg"></i></a>
+                </li>
+            </ul>
 
         </div>
-
     </div>
 </div>
 
@@ -112,10 +115,27 @@
 
                 </a>
 
+				<?php if ( $name != ".." ): ?>
+                <form action="/resources/scripts/delete.php" method="post" class="delete-form <?=$fileInfo["id"]?>-form">
+                    <input title="" name="path" value="<?php echo $fileInfo['url_path']; ?>" style="display: none">
+                    <a href="javascript:$('.<?=$fileInfo["id"]?>-form').submit()" class="delete-button">
+                        <i class="fa fa-trash"></i>
+                    </a>
+                </form>
+				<?php endif; ?>
+
 				<?php if ( is_file( $fileInfo['file_path'] ) ): ?>
 
                     <a href="javascript:void(0)" class="file-info-button">
-                        <i class="fa fa-info-circle"></i>
+                        <i class="fa fa-download"></i>
+                    </a>
+
+				<?php endif; ?>
+
+				<?php if ( end( explode( ".", $fileInfo['file_path'] ) ) == "zip" ): ?>
+
+                    <a href="javascript:void(0)" class="file-unzip-button">
+                        <i class="fa fa-file-archive-o"></i>
                     </a>
 
 				<?php endif; ?>
@@ -169,11 +189,32 @@
             </div>
 
             <div class="modal-body">
+                <form id="upload-form" action="/resources/scripts/upload.php" method="post"
+                      enctype="multipart/form-data" class="form-inline">
+                    <input type="file" name="fileToUpload" id="fileToUpload" class="form-control">
+                    <input type="submit" value="Upload File" class="btn btn-primary" name="submit">
+                </form>
+            </div>
 
-                <form action="/resources/scripts/upload.php" method="post" enctype="multipart/form-data">
-                    Select image to upload:
-                    <input type="file" name="fileToUpload" id="fileToUpload">
-                    <input type="submit" value="Upload Image" name="submit">
+        </div>
+    </div>
+</div>
+
+<div id="settings-modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">{{modal_header}}</h4>
+            </div>
+
+            <div class="modal-body">
+                <form id="change-password" action="/resources/scripts/update_profile.php" method="post"
+                      class="form-inline">
+                    <label for="password">New Password: </label><input class="form-control" type="password"
+                                                                       name="password" id="password">
+                    <input type="submit" value="Change password" name="submit" class="btn btn-primary">
                 </form>
             </div>
 

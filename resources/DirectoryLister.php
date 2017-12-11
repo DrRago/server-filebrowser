@@ -115,8 +115,7 @@ class DirectoryLister
             header("Content-Disposition: attachment; filename = $download");
             header('Content-Length: ' . filesize($download));
             header("Location: $download");
-
-
+            unlink(tandashi.de.zip);
         }
 
     }
@@ -533,7 +532,9 @@ class DirectoryLister
     protected function _readDirectory($directory, $sort = 'natcase')
     {
 
-        // Initialize array
+	    $counter = 0;
+
+	    // Initialize array
         $directoryArray = array();
 
         // Get directory contents
@@ -600,7 +601,8 @@ class DirectoryLister
                             'file_size' => '-',
                             'mod_time' => date($this->_config['date_format'], filemtime($realPath)),
                             'icon_class' => 'fa-level-up',
-                            'sort' => 0
+                            'sort' => 0,
+	                        'id' => $counter
                         );
                     }
 
@@ -614,6 +616,8 @@ class DirectoryLister
 
                         if (is_dir($relativePath)) {
                             $urlPath = $this->containsIndex($relativePath) ? $relativePath : '?dir=' . $urlPath;
+                        } else {
+                        	$urlPath = "view_file.php?file=" . $relativePath;
                         }
 
                         // Add the info to the main array
@@ -623,12 +627,15 @@ class DirectoryLister
                             'file_size' => is_dir($realPath) ? '-' : $this->getFileSize($realPath),
                             'mod_time' => date($this->_config['date_format'], filemtime($realPath)),
                             'icon_class' => $iconClass,
-                            'sort' => $sort
+                            'sort' => $sort,
+                            'id' => $counter
                         );
                     }
 
                 }
             }
+
+            $counter ++;
 
         }
 

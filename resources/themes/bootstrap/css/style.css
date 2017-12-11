@@ -68,8 +68,28 @@ body.breadcrumb-fixed {
     top: 4px;
 }
 
+.delete-button {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: -26px;
+    padding: 6px 10px !important;
+    position: absolute !important;
+    top: 4px;
+}
+
+.file-unzip-button {
+    display: inline-block;
+    cursor: pointer;
+    margin-left: calc(100% + 26px);
+    padding: 6px 10px !important;
+    position: absolute !important;
+    top: 4px;
+}
+
 .web-link-button i,
-.file-info-button i {
+.file-info-button i,
+.file-unzip-button i,
+.delete-button i {
     color: #999;
 }
 

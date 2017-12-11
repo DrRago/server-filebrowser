@@ -1,6 +1,6 @@
 $("#login-button").click(function (event) {
     event.preventDefault();
-    $.post("scripts/login.php", {
+    $.post("resources/scripts/login.php", {
         username: $(".username").val(),
         password: $(".password").val(),
         key: $(".key").val()

@@ -38,11 +38,11 @@ return array(
     ),
 
     // Allow to download directories as zip files
-    'zip_dirs' => true,
+    'zip_dirs' => false,
 
     // Stream zip file content directly to the client,
     // without any temporary file
-    'zip_stream' => true,
+    'zip_stream' => false,
 
     'zip_compression_level' => 0,
 
