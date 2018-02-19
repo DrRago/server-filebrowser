@@ -1,5 +1,5 @@
 <?php
-$mysqli = new mysqli( "localhost", "leonhard", "ZicQSJiW0jTHoCp9", "filebrowser" );
+$mysqli = new mysqli( "localhost", "filebrowser", "OXQ38PuZDkvWp1xB", "filebrowser" );
 
 if ( ! $mysqli ) {
 	die( "Connection Failed" );
